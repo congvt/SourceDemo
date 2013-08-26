@@ -25,7 +25,6 @@ static int oopsdemo_open(struct inode *inode, struct file *filp)
 		if (!buffer)
 			return -ENOMEM;
 	}	
-	memset(buffer, 0, bufsize);
 	return 0;
 }
 
@@ -34,10 +33,16 @@ static int oopsdemo_release(struct inode *inode, struct file *filp)
 	/*
 	 * FIX Me - don't set pointer to NULL after free
 	 */
-	kfree(buffer);
+//	kfree(buffer);
 	return 0;
 }
 
+static ssize_t oopsdemo_write(struct file *fp, const char __user *buf, size_t len, 
+		loff_t *pos)
+{
+	memset(buffer, 0, bufsize);
+	return len;
+}
 static ssize_t oopsdemo_read(struct file *fp, char __user *buf, size_t len, 
 		loff_t *pos)
 {
@@ -53,6 +58,7 @@ static struct file_operations oopsdemo_fops = {
 	.open		= oopsdemo_open,
 	.release	= oopsdemo_release,
 	.read		= oopsdemo_read,
+	.write		= oopsdemo_write,
 };
 
 int major;
